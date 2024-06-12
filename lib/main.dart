@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl_browser.dart';
 import 'firebase_options.dart';
 import 'view/cadastrar_view.dart';
 import 'view/login_view.dart';
@@ -12,7 +11,9 @@ import 'view/reserva_detalhes_view.dart';
 import 'view/perfil_usuario_view.dart';
 import 'view/sobre_view.dart';
 import 'view/reservas_view.dart';
-
+import 'view/clientes_view.dart';
+import 'view/mesas_view.dart';
+import 'view/pedidos_view.dart';
 
 Future<void> main() async {
   // Firebase
@@ -57,6 +58,9 @@ class MainApp extends StatelessWidget {
         'perfilUsuario': (context) => PerfilUsuarioView(),
         'sobre': (context) => SobreView(),
         'reservas': (context) => ReservasView(),
+        'clientes': (context) => ClientesView(),
+        'mesas': (context) => MesasView(),
+        'pedidos': (context) => PedidosView(),
       },
     );
   }

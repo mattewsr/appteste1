@@ -10,7 +10,7 @@ class SobreView extends StatelessWidget {
         title: Text('Sobre'),
       ),
       body: Center(
-        child: Text('Informações sobre o aplicativo.'),
+        child: Text('esse aplicativo foi desnevolvido para atender um sistema de reservas e recepção para um restaurante desenvolvido na aula de desenvolvimento movel por matheus rossi '),
       ),
     );
   }

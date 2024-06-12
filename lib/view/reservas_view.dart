@@ -17,6 +17,7 @@ class _ReservasViewState extends State<ReservasView> {
   var txtQuantidadePessoas = TextEditingController();
   var txtHorarioReserva = TextEditingController();
   DateTime? _selectedDate;
+  String _searchTerm = '';
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -24,7 +25,7 @@ class _ReservasViewState extends State<ReservasView> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
-      locale: const Locale('pt', 'BR'), // Configurando o idioma do calendário para português
+      locale: const Locale('pt', 'BR'),
     );
 
     if (pickedDate != null && pickedDate != _selectedDate)
@@ -45,6 +46,23 @@ class _ReservasViewState extends State<ReservasView> {
       });
   }
 
+  void _searchReservas(String searchTerm) {
+    setState(() {
+      _searchTerm = searchTerm;
+    });
+  }
+
+  void _editReserva(Map<String, dynamic> reservaData) {
+    setState(() {
+      txtNomeCliente.text = reservaData['nomeCliente'];
+      txtMesa.text = reservaData['mesa'];
+      txtTelefone.text = reservaData['telefone'];
+      txtQuantidadePessoas.text = reservaData['quantidadePessoas'];
+      txtHorarioReserva.text = reservaData['horarioReserva'];
+      _selectedDate = reservaData['dataReserva'].toDate();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +74,19 @@ class _ReservasViewState extends State<ReservasView> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(
+                  searchCallback: _searchReservas,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -200,7 +231,7 @@ class _ReservasViewState extends State<ReservasView> {
               ),
               SizedBox(height: 20),
               StreamBuilder(
-                stream: firestoreService.getReservasStream(), // <- Aqui está a chamada para o método
+                stream: firestoreService.getReservasStream(searchTerm: _searchTerm),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
@@ -217,6 +248,12 @@ class _ReservasViewState extends State<ReservasView> {
                           leading: Icon(Icons.event),
                           title: Text(reserva['nomeCliente']),
                           subtitle: Text(DateFormat('dd/MM/yyyy').format(reserva['dataReserva'].toDate())),
+                          trailing: IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              _editReserva(reserva);
+                            },
+                          ),
                         );
                       },
                     );
@@ -228,5 +265,44 @@ class _ReservasViewState extends State<ReservasView> {
         ),
       ),
     );
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate<String> {
+  final Function(String) searchCallback;
+
+  CustomSearchDelegate({required this.searchCallback});
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          query = '';
+        },
+        icon: Icon(Icons.clear),
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, '');
+      },
+      icon: Icon(Icons.arrow_back),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    searchCallback(query);
+    return Container();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return Container();
   }
 }

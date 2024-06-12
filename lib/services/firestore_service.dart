@@ -15,16 +15,26 @@ class FirestoreService {
 
   // Método específico para adicionar dados à coleção 'reservas'
   Future<void> adicionarReserva(Map<String, dynamic> dados) async {
-    try {
-      await _firestore.collection('reservas').add(dados);
-    } catch (e) {
-      print('Erro ao adicionar reserva: $e');
-      throw Exception('Erro ao adicionar reserva');
-    }
+    await adicionarDados('reservas', dados);
+  }
+
+  // Método específico para adicionar dados à coleção 'clientes'
+  Future<void> adicionarCliente(Map<String, dynamic> dados) async {
+    await adicionarDados('clientes', dados);
+  }
+
+  // Método específico para adicionar dados à coleção 'mesas'
+  Future<void> adicionarMesa(Map<String, dynamic> dados) async {
+    await adicionarDados('mesas', dados);
+  }
+
+  // Método específico para adicionar dados à coleção 'pedidos'
+  Future<void> adicionarPedido(Map<String, dynamic> dados) async {
+    await adicionarDados('pedidos', dados);
   }
 
   // Método para obter um stream de reservas
-  Stream<QuerySnapshot> getReservasStream() {
+  Stream<QuerySnapshot> getReservasStream({required String searchTerm}) {
     return _firestore.collection('reservas').snapshots();
   }
 }
